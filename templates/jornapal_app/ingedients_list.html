@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Список ингредиентов
+{% endblock %}
+
+{% block content %}
+<h2 class="text-center">Список ингредиентов</h2>
+{% if user.is_authenticated %}
+<h4><a href="{% url 'add_ingredient' %}">Добавить ингредиент</a></h4>
+{% endif %}
+<ul class="list-group list-group-flush">
+    {% for ingredient in ingredients %}
+    <a href="#">
+        <li class="list-group-item">{{ ingredient|capfirst }}</li>
+    </a>
+    {% endfor %}
+</ul>
+{% endblock %}

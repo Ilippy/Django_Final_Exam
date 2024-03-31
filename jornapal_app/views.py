@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from django.views.generic import ListView
-from .models import Ingredient, Recipe, Image
-from .forms import IngredientForm, RecipeForm, ImageForm, RecipeIngredientForm
+from .models import Ingredient, Recipe, Image, Category
+from .forms import IngredientForm, RecipeForm, ImageForm, RecipeIngredientForm, CategoryForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
@@ -61,3 +61,24 @@ class AddIngredientView(LoginRequiredMixin, CreateView):
     model = Ingredient
     form_class = IngredientForm
     template_name = 'jornapal_app/add_ingredient.html'
+
+
+class IngredientListView(ListView):
+    model = Ingredient
+    form_class = IngredientForm
+    context_object_name = 'ingredients'
+    template_name = 'jornapal_app/ingedients_list.html'
+
+
+# Категории
+class AddCategoryView(LoginRequiredMixin, CreateView):
+    model = Category
+    form_class = CategoryForm
+    template_name = 'jornapal_app/add_category.html'
+
+
+class CategoryListView(ListView):
+    model = Category
+    form_class = CategoryForm
+    context_object_name = 'categories'
+    template_name = 'jornapal_app/categories_list.html'

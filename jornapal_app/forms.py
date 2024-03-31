@@ -17,11 +17,43 @@ class IngredientForm(forms.ModelForm):
         error_messages = {
             'name': {
                 # 'max_length': "Слишком много символов",
-                # 'min_length': "Слишком мало символов",
+                'unique': "Такой ингредиент уже существует",
                 'required': 'Укажите хотя бы один символ',
             }
         }
 
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        if name:
+            return name.lower()
+        return name
+
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = '__all__'
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'})
+        }
+
+        labels = {
+            'name': 'Ингридиент'
+        }
+
+        error_messages = {
+            'name': {
+                # 'max_length': "Слишком много символов",
+                'unique': "Такая категория уже существует",
+                'required': 'Укажите хотя бы один символ',
+            }
+        }
+
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        if name:
+            return name.lower()
+        return name
 
 class RecipeForm(forms.ModelForm):
     class Meta:

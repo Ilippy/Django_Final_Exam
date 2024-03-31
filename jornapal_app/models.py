@@ -9,6 +9,9 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('categories')
+
 
 class Ingredient(models.Model):
     name = models.CharField(max_length=80, unique=True)
@@ -17,7 +20,7 @@ class Ingredient(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('add_ingredient')
+        return reverse('ingredients')
 
 
 class Recipe(models.Model):
@@ -36,7 +39,7 @@ class Recipe(models.Model):
 
 class Image(models.Model):
     url = models.ImageField(upload_to='recipe_images')
-    recipe = models.ForeignKey(Recipe, related_name='images', on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe, related_name='images', on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.url
