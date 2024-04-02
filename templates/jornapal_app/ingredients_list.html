@@ -11,7 +11,7 @@
 {% endif %}
 <ul class="list-group list-group-flush">
     {% for ingredient in ingredients %}
-    <a href="#">
+    <a href="{% url 'ingredient_detail' ingredient.id %}">
         <li class="list-group-item">{{ ingredient|capfirst }}</li>
     </a>
     {% endfor %}

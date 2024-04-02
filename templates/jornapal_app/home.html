@@ -4,8 +4,18 @@
 Home
 {% endblock %}
 
-{% block content %}
-<h2>Список рецептов</h2>
-{{user}}
 
+{% block content %}
+<h2 class="text-center">Список рецептов</h2>
+{% if user.is_authenticated %}
+<h4><a href="{% url 'add_recipe' %}">Добавить рецепт</a></h4>
+{% endif %}
+<ul class="list-group list-group-flush">
+    {% for recipe in recipes %}
+    <a href="#">
+        <li class="list-group-item">{{ recipe|capfirst }}</li>
+    </a>
+    {% endfor %}
+</ul>
 {% endblock %}
+

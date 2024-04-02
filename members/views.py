@@ -20,7 +20,6 @@ class UserRegisterView(CreateView):
         email = form.cleaned_data['email']
         first_name = form.cleaned_data['first_name']
         last_name = form.cleaned_data['last_name']
-        print(form.cleaned_data)
         user = authenticate(
             self.request,
             username=username,

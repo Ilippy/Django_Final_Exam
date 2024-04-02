@@ -1,24 +1,100 @@
 {% extends 'base.html' %}
-
+{% block title %}
+Добавление рецепта
+{% endblock %}
 
 {% block content %}
-
-<h1>Add Recipe</h1>
+<h1>Добавить рецепт</h1>
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form.as_p }}
 
-    <!-- Image Form -->
-    <h2>Add Images</h2>
-    {{ image_form.as_p }}
+    {{ form.photo }}
+    <div class="form-group mt-2">
+        {{ form.title.label }}
+        {{ form.title }}
+    </div>
+    <div class="form-group mt-2">
+    {{ form.description.label }}
+    {{ form.description }}
+    </div>
+    <div id="ingredient-forms" class="mt-2">
+        <h4>Ингредиенты
+            <button id="add-ingredient" class="btn btn-outline-success"><i class="bi bi-plus-lg"></i></button>
+        </h4>
+        <div class="ingredient-group mt-1">
+            <input type="text" name="ingredient_name" placeholder="Введите ингредиент" required maxlength="80">
+            <label for="id_amount">Количество:</label>
+            <input type="text" name="amount" placeholder="Введите количество" required maxlength="20">
+            <button class="remove-ingredient btn btn-outline-danger"><i class="bi bi-x"></i></button>
+        </div>
+    </div>
+
+    <div class="form-group mt-2">
+        {{ form.cooking_time.label }}
+        {{ form.cooking_time }}
+    </div>
+    <div class="form-group mt-2">
+    {{ form.cooking_steps.label }}
+    {{ form.cooking_steps }}
+    </div>
+
+    <div id="category-forms">
+        <h4 class="mt-2">Категории
+            <button id="add-category" class="btn btn-outline-success"><i class="bi bi-plus-lg"></i></button>
+        </h4>
+        <div class="category-group mt-1 ">
+            <input type="text" name="category_name" required placeholder="Введите категорию" maxlength="80">
+            <button class="remove-category btn btn-outline-danger"><i class="bi bi-x"></i></button>
+        </div>
+    </div>
+
 
     <!-- Ingredient Form -->
-    <h2>Add Ingredients</h2>
-    {{ ingredient_form.as_p }}
-    {% for field in ingredient_form %}
 
-    {% endfor %}
-
-    <input class="btn btn-secondary mt-3" type="submit" value="Создать">
+    <input class="btn btn-secondary mt-5" type="submit" value="Submit">
 </form>
+
+
+{% endblock %}
+
+{% block js_add %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        function delete_parent(event){
+            event.preventDefault();
+            event.currentTarget.parentNode.remove();
+        }
+
+        let container = document.getElementById('ingredient-forms');
+        let button_add = container.querySelector('#add-ingredient');
+        let my_form = container.querySelector('.ingredient-group').cloneNode(true);
+        let delete_button = container.querySelector('.remove-ingredient');
+        delete_button.addEventListener('click', delete_parent);
+
+        let category_container = document.getElementById('category-forms');
+        let category_button_add = category_container.querySelector('#add-category');
+        let category_form = category_container.querySelector('.category-group').cloneNode(true);
+        let category_delete_button = category_container.querySelector('.remove-category');
+        category_delete_button.addEventListener('click', delete_parent);
+
+        button_add.addEventListener('click', (event) => {
+            event.preventDefault();
+            let clone_form = my_form.cloneNode(true);
+            container.append(clone_form);
+            let new_delete_button = clone_form.getElementsByClassName('remove-ingredient')[0];
+            new_delete_button.addEventListener('click', delete_parent);
+        });
+
+        category_button_add.addEventListener('click', (event) => {
+            event.preventDefault();
+            let clone_form = category_form.cloneNode(true);
+            category_container.append(clone_form);
+            let new_delete_button = clone_form.getElementsByClassName('remove-category')[0];
+            new_delete_button.addEventListener('click', delete_parent);
+        });
+    });
+</script>
+
+
 {% endblock %}

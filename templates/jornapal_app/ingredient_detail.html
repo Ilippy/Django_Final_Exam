@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ ingredient }}
+{% endblock %}
+
+{% block content %}
+<h2 class="text-center">{{ ingredient|capfirst }}</h2>
+
+<h4>Содержится</h4>
+<ul>
+{% for recipe in ingredient.recipes.all %}
+    <li><a href="#">{{ recipe }}</a></li>
+{% endfor %}
+</ul>
+{% endblock %}

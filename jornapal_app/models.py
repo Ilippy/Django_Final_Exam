@@ -50,4 +50,3 @@ class RecipeIngredient(models.Model):
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     # возможно надо было это сделать числом и вынести тип числа в отдельное поле
     amount = models.CharField(max_length=20, blank=True)
-    is_optional = models.BooleanField(default=False)
