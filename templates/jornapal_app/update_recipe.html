@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Update Recipe
+{% endblock %}
+
+{% block content %}
+<h1>Редактирование рецепта</h1>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.photo }}
+    <div class="form-group mt-2">
+        {{ form.title.label }}
+        {{ form.title }}
+    </div>
+    <div class="form-group mt-2">
+        {{ form.description.label }}
+        {{ form.description }}
+    </div>
+    <div id="ingredient-forms" class="mt-2">
+        <h4>Ingredients
+            <button id="add-ingredient" class="btn btn-outline-success" type="button"><i class="bi bi-plus-lg"></i>
+            </button>
+        </h4>
+        {{ form.recipe_ingredients.management_form }}
+        {% for form in ingredient_formset %}
+        <div class="ingredient-group mt-1 d-flex gap-3">
+            <input type="text" name="ingredient-{{ forloop.counter0 }}-ingredient"
+                   value="{{ form.instance.ingredient.name }}" placeholder="Введите ингредиент" required maxlength="80">
+            {{ form.amount }}
+            <button class="remove-ingredient btn btn-outline-danger" type="button"><i class="bi bi-x"></i></button>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="form-group mt-2">
+        {{ form.cooking_time.label }}
+        {{ form.cooking_time }}
+    </div>
+    <div class="form-group mt-2">
+        {{ form.cooking_steps.label }}
+        {{ form.cooking_steps }}
+    </div>
+    <div id="category-forms">
+        <h4 class="mt-2">Categories
+            <button id="add-category" class="btn btn-outline-success" type="button"><i class="bi bi-plus-lg"></i>
+            </button>
+        </h4>
+        {% for category in form.instance.categories.all %}
+        <div class="category-group mt-1 d-flex gap-3">
+            <input type="text" name="category-{{forloop.counter0}}-name" value="{{ category.name }}" required placeholder="Введите категорию"
+                   maxlength="80">
+            <button class="remove-category btn btn-outline-danger" type="button"><i class="bi bi-x"></i></button>
+        </div>
+        {% endfor %}
+    </div>
+    <input class="btn btn-secondary mt-5" type="submit" value="Update">
+</form>
+{% endblock %}
+
+{% block js_add %}
+<script src="{% static 'js/create_delete_ingredients_categories.js' %}"></script>
+{% endblock %}

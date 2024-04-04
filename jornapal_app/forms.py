@@ -98,6 +98,10 @@ class RecipeForm(forms.ModelForm):
 
 
 class RecipeIngredientForm(forms.ModelForm):
+    ingredient = forms.CharField(max_length=80)
     class Meta:
         model = RecipeIngredient
         fields = ['ingredient', 'amount', ]
+        widgets = {
+            'amount': forms.TextInput(attrs={'placeholder': 'Введите количество'})
+        }

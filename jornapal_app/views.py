@@ -1,3 +1,4 @@
+from django.forms import modelformset_factory
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
@@ -31,28 +32,34 @@ class AddRecipeView(LoginRequiredMixin, CreateView):
             self.object.images.add(image)
 
         # Handling ingredients
-        ingredients_data = self.request.POST.getlist('ingredient_name')
-        amounts_data = self.request.POST.getlist('amount')
-        # print(ingredients_data)
-        # print(amounts_data)
+        for key, value in self.request.POST.items():
+            print(key, value)
+            if key.startswith('ingredient-'):
+                index = key.split('-')[1]  # Get the index from the key
+                ingredient_name = self.request.POST.get(f'ingredient-{index}-ingredient')
+                amount = self.request.POST.get(f'ingredient-{index}-amount')
 
-        for i in range(len(ingredients_data)):
-            ingredient_name = ingredients_data[i].strip().lower()
-            amount = amounts_data[i]
-            ingredient, _ = Ingredient.objects.get_or_create(name=ingredient_name)
+                if ingredient_name and amount:
+                    ingredient, _ = Ingredient.objects.get_or_create(name=ingredient_name.strip().lower())
+                    form.instance.ingredients.add(ingredient, through_defaults={'amount': amount})
+                    # RecipeIngredient.objects.create(
+                    #     recipe=self.object,
+                    #     ingredient=ingredient,
+                    #     amount=amount
+                    # )
+            if key.startswith('category-'):
+                index = key.split('-')[1]
+                category_name = self.request.POST.get(f'category-{index}-name')
 
-            # Создание RecipeIngredient
-            RecipeIngredient.objects.create(
-                recipe=self.object,
-                ingredient=ingredient,
-                amount=amount,
-            )
+                if category_name:
+                    category, _ = Category.objects.get_or_create(name=category_name.strip().lower())
+                    form.instance.categories.add(category)
 
         # Категории
-        categories = self.request.POST.getlist('category_name')
-        for category_data in categories:
-            category, _ = Category.objects.get_or_create(name=category_data.strip().lower())
-            form.instance.categories.add(category)
+        # categories = self.request.POST.getlist('category_name')
+        # for category_data in categories:
+        #     category, _ = Category.objects.get_or_create(name=category_data.strip().lower())
+        #     form.instance.categories.add(category)
 
         return super().form_valid(form)
 
@@ -60,10 +67,58 @@ class AddRecipeView(LoginRequiredMixin, CreateView):
 class RecipeUpdateView(LoginRequiredMixin, UpdateView):
     model = Recipe
     form_class = RecipeForm
-    template_name = 'jornapal_app/add_recipe.html'
-    reverse_lazy = 'home'
+    template_name = 'jornapal_app/update_recipe.html'
+    success_url = reverse_lazy('home')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        IngredientFormSet = modelformset_factory(RecipeIngredient, form=RecipeIngredientForm, extra=0)
+        context['ingredient_formset'] = IngredientFormSet(queryset=self.object.recipe_ingredients.all(),
+                                                          prefix='ingredient')
+        print(context)
+        return context
 
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        self.object = form.save()
+
+        # Handling images
+        images = self.request.FILES.getlist('photo')
+        for image_data in images:
+            extension = image_data.name.split('.')[-1]
+            filename = f'{uuid4()}.{extension}'
+            fs = FileSystemStorage()
+            fs.save(filename, image_data)
+            image = Image.objects.create(url=filename)
+            self.object.images.add(image)
+
+        # Handling ingredients
+        # ingredient_formset = self.get_context_data()['ingredient_formset']
+
+        for key, value in self.request.POST.items():
+            print(key, value)
+            if key.startswith('ingredient-'):
+                index = key.split('-')[1]  # Get the index from the key
+                ingredient_name = self.request.POST.get(f'ingredient-{index}-ingredient')
+                amount = self.request.POST.get(f'ingredient-{index}-amount')
+
+                if ingredient_name and amount:
+                    ingredient, _ = Ingredient.objects.get_or_create(name=ingredient_name.strip().lower())
+                    recipe_ingredient, _ = RecipeIngredient.objects.get_or_create(
+                        recipe=self.object,
+                        ingredient=ingredient
+                    )
+                    recipe_ingredient.amount = amount
+                    recipe_ingredient.save()
+
+        # Handling categories
+        categories = self.request.POST.getlist('category_name')
+        form.instance.categories.clear()  # Clear existing categories
+        for category_data in categories:
+            category, _ = Category.objects.get_or_create(name=category_data.strip().lower())
+            form.instance.categories.add(category)
+
+        return super().form_valid(form)
 
 
 class RecipeListView(ListView):
