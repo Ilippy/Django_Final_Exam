@@ -22,10 +22,10 @@
             <th>Количество</th>
         </tr>
         {% for recipe_ingredient in recipe.recipe_ingredients.all %}
-            <tr>
-                <td>{{ recipe_ingredient.ingredient.name }}</td>
-                <td>{{ recipe_ingredient.amount }}</td>
-            </tr>
+        <tr>
+            <td>{{ recipe_ingredient.ingredient.name }}</td>
+            <td>{{ recipe_ingredient.amount }}</td>
+        </tr>
         {% endfor %}
     </table>
 </div>
@@ -44,16 +44,17 @@
 <h4>Категории</h4>
 <ul>
     {% for category in recipe.categories.all %}
-        <li>{{ category }}</li>
+    <li>{{ category }}</li>
     {% endfor %}
 </ul>
 {% else %}
-    <p>Категорий нет</p>
+<p>Категорий нет</p>
 {% endif %}
 <p>Автор: {{ recipe.author.first_name }} {{ recipe.author.last_name }}</p>
 <form method="post">
     {% csrf_token %}
-<button class="btn btn-secondary" name="delete">Удалить</button>
+    <button class="btn btn-secondary" name="delete">Удалить</button>
 </form>
+
 
 {% endblock %}

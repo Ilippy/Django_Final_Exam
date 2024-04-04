@@ -10,7 +10,10 @@ Login
 <div class="form-group">
     <form method="post">
         {% csrf_token %}
-        {{ form }}
+        {{ form.username.label }}
+        {{ form.username }}
+        {{ form.password.label }}
+        {{ form.password }}
         <button class="btn btn-secondary mt-3">Войти</button>
     </form>
 </div>

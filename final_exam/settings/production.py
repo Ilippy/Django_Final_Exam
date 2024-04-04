@@ -7,7 +7,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
-    'username.pythonanywhere.com',
+    'Ilippy.pythonanywhere.com',
 ]
 
 DATABASES = {
