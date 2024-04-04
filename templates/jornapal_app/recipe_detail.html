@@ -51,10 +51,12 @@
 <p>Категорий нет</p>
 {% endif %}
 <p>Автор: {{ recipe.author.first_name }} {{ recipe.author.last_name }}</p>
+{% if user.is_authenticated %}
 <form method="post">
     {% csrf_token %}
     <button class="btn btn-secondary" name="delete">Удалить</button>
 </form>
+{% endif %}
 
 
 {% endblock %}
