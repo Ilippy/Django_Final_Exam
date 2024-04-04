@@ -32,6 +32,7 @@ class Recipe(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recipes')
     categories = models.ManyToManyField(Category, related_name='recipes')
     ingredients = models.ManyToManyField(Ingredient, through='RecipeIngredient', related_name='recipes')
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.title} | {self.author}"
@@ -46,7 +47,7 @@ class Image(models.Model):
 
 
 class RecipeIngredient(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='recipe_ingredients')
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     # возможно надо было это сделать числом и вынести тип числа в отдельное поле
     amount = models.CharField(max_length=20, blank=True)

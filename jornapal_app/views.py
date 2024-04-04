@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, UpdateView
 from .models import Ingredient, Recipe, Image, Category, RecipeIngredient
 from .forms import IngredientForm, RecipeForm, RecipeIngredientForm, CategoryForm
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -15,17 +15,7 @@ class AddRecipeView(LoginRequiredMixin, CreateView):
     template_name = 'jornapal_app/add_recipe.html'
     success_url = reverse_lazy('home')
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['ingredient_form'] = RecipeIngredientForm()
-    #     return context
-
-    # def form_invalid(self, form):
-    #     print(form)
-    #     return super().form_invalid(form)
-
     def form_valid(self, form):
-        print('aaaaaa')
         form.instance.author = self.request.user
         self.object = form.save()
 
@@ -43,8 +33,8 @@ class AddRecipeView(LoginRequiredMixin, CreateView):
         # Handling ingredients
         ingredients_data = self.request.POST.getlist('ingredient_name')
         amounts_data = self.request.POST.getlist('amount')
-        print(ingredients_data)
-        print(amounts_data)
+        # print(ingredients_data)
+        # print(amounts_data)
 
         for i in range(len(ingredients_data)):
             ingredient_name = ingredients_data[i].strip().lower()
@@ -67,18 +57,36 @@ class AddRecipeView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
+class RecipeUpdateView(LoginRequiredMixin, UpdateView):
+    model = Recipe
+    form_class = RecipeForm
+    template_name = 'jornapal_app/add_recipe.html'
+    reverse_lazy = 'home'
+
+
+
+
 class RecipeListView(ListView):
     template_name = 'jornapal_app/home.html'
     context_object_name = 'recipes'
 
     def get_queryset(self):
-        return Recipe.objects.order_by('?')[:5]
+        # return Recipe.objects.select_related('author').filter(is_deleted=False).order_by('?')[:5]
+        return Recipe.objects.select_related('author').filter(is_deleted=False)
 
 
 class RecipeDetailView(DetailView):
-    template_name = ''
+    template_name = 'jornapal_app/recipe_detail.html'
     model = Recipe
     context_object_name = 'recipe'
+
+    def post(self, request, *args, **kwargs):
+        if 'delete' in request.POST:
+            recipe = self.get_object()
+            recipe.is_deleted = True
+            recipe.save()
+            return redirect('home')
+        return render(request, self.template_name)
 
 
 # Отобразить рецепты пользователя

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ ingredient }}
+{% endblock %}
+
+{% block content %}
+{% for image in recipe.images.all %}
+<img src="{{ image.url.url }}" alt="" width="400px">
+{% endfor %}
+<h2 class="text-center">{{ recipe.title|capfirst }}</h2>
+<div class="recipe_description">
+    <h4></h4>
+    {{ recipe.description }}
+</div>
+{% if recipe.recipe_ingredients.count %}
+
+<div class="recipe_ingredients">
+    <table class="table table-hover table-bordered table-striped">
+        <tr>
+            <th>Ингредиент</th>
+            <th>Количество</th>
+        </tr>
+        {% for recipe_ingredient in recipe.recipe_ingredients.all %}
+            <tr>
+                <td>{{ recipe_ingredient.ingredient.name }}</td>
+                <td>{{ recipe_ingredient.amount }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+{% else %}
+<p>Ингредиентов нет</p>
+{% endif %}
+
+<div class="recipe-cooking_steps">
+    <h4>Шаги приготовления</h4>
+    {{ recipe.cooking_steps }}
+</div>
+<div class="recipe-cooking_time">
+    Время приговления: {{ recipe.cooking_time|time:"Hч iм" }}
+</div>
+{% if recipe.categories.count %}
+<h4>Категории</h4>
+<ul>
+    {% for category in recipe.categories.all %}
+        <li>{{ category }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+    <p>Категорий нет</p>
+{% endif %}
+<p>Автор: {{ recipe.author.first_name }} {{ recipe.author.last_name }}</p>
+<form method="post">
+    {% csrf_token %}
+<button class="btn btn-secondary" name="delete">Удалить</button>
+</form>
+
+{% endblock %}

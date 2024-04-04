@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}
 Home
 {% endblock %}
@@ -10,12 +10,23 @@ Home
 {% if user.is_authenticated %}
 <h4><a href="{% url 'add_recipe' %}">Добавить рецепт</a></h4>
 {% endif %}
-<ul class="list-group list-group-flush">
-    {% for recipe in recipes %}
-    <a href="#">
-        <li class="list-group-item">{{ recipe|capfirst }}</li>
-    </a>
-    {% endfor %}
-</ul>
+
+    <div class="row row-cols-1 row-cols-xs-2 row-cols-sm-2 row-cols-lg-4 g-3">
+        {% for recipe in recipes %}
+            <div class="card m-3" style="width: 18rem;">
+                {% if recipe.images.first %}
+                    <img src="{{ recipe.images.first.url.url }}" class="card-img-top">
+                {% else %}
+                    <img src="{% static 'img/default-product-image.png' %}" alt="recipe image not found" class="card-img-top">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ recipe.title }}</h5>
+                    <p class="card-text">{{ recipe.description|truncatechars:15 }}</p>
+                    <a href="{% url 'recipe_detail' recipe.id %}" class="btn btn-secondary">Открыть</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
 {% endblock %}
 
