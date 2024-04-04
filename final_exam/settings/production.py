@@ -13,7 +13,7 @@ ALLOWED_HOSTS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Ilippy$default',
+        'NAME': 'Ilippy$jornapal',
         'USER': 'Ilippy',
         'PASSWORD': os.getenv('MYSQL_PASSWORD'),
         'HOST': 'Ilippy.mysql.pythonanywhere-services.com',
