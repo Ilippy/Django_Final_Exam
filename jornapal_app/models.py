@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 
 class Category(models.Model):
@@ -42,8 +43,10 @@ class Image(models.Model):
     url = models.ImageField(upload_to='recipe_images')
     recipe = models.ForeignKey(Recipe, related_name='images', on_delete=models.CASCADE, null=True)
 
-    def __str__(self):
-        return self.url
+    def image_tag(self):
+        return mark_safe('<img src="/media/%s" width="150" height="150" />' % (self.url))
+
+    image_tag.short_description = 'Image'
 
 
 class RecipeIngredient(models.Model):
