@@ -23,3 +23,6 @@ DATABASES = {
         }
     }
 }
+
+MEDIA_DIR = "/home/Ilippy/Django_Final_Exam/media/"
+MEDIA_ROOT = MEDIA_DIR
