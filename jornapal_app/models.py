@@ -1,3 +1,5 @@
+import os
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -37,6 +39,14 @@ class Recipe(models.Model):
 
     def __str__(self):
         return f"{self.title} | {self.author}"
+
+
+def rename_image_filename(instance, filename):
+    """Изменение имени файла"""
+    upload_to = 'recipe_images'
+    ext = filename.split('.')[-1]
+    filename = "%s_%s.%s" % (instance.user.id, instance.questid.id, ext)
+    return os.path.join(upload_to, filename)
 
 
 class Image(models.Model):

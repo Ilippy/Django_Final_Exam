@@ -23,12 +23,13 @@ Update Recipe
             <button id="add-ingredient" class="btn btn-outline-success" type="button"><i class="bi bi-plus-lg"></i>
             </button>
         </h4>
-        {{ form.recipe_ingredients.management_form }}
-        {% for form in ingredient_formset %}
+
+        {% for set_form in ingredient_formset %}
         <div class="ingredient-group mt-1 d-flex gap-3">
+            {{ set_form.id }}
             <input type="text" name="ingredient-{{ forloop.counter0 }}-ingredient"
-                   value="{{ form.instance.ingredient.name }}" placeholder="Введите ингредиент" required maxlength="80">
-            {{ form.amount }}
+                   value="{{ set_form.instance.ingredient.name|capfirst }}" placeholder="Введите ингредиент" required maxlength="80">
+            {{ set_form.amount }}
             <button class="remove-ingredient btn btn-outline-danger" type="button"><i class="bi bi-x"></i></button>
         </div>
         {% endfor %}
@@ -48,7 +49,7 @@ Update Recipe
         </h4>
         {% for category in form.instance.categories.all %}
         <div class="category-group mt-1 d-flex gap-3">
-            <input type="text" name="category-{{forloop.counter0}}-name" value="{{ category.name }}" required placeholder="Введите категорию"
+            <input type="text" name="category-{{forloop.counter0}}-name" value="{{ category.name|capfirst }}" required placeholder="Введите категорию"
                    maxlength="80">
             <button class="remove-category btn btn-outline-danger" type="button"><i class="bi bi-x"></i></button>
         </div>

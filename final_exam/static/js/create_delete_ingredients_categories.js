@@ -136,6 +136,8 @@ document.addEventListener("DOMContentLoaded", function() {
         categoryGroup.appendChild(removeButton);
 
         category_container.appendChild(categoryGroup);
+
+        categoryCounter++;
     });
 
 });

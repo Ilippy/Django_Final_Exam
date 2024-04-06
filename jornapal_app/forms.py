@@ -1,3 +1,5 @@
+from django.forms import inlineformset_factory
+
 from .models import Recipe, Ingredient, Category, Image, RecipeIngredient
 from django import forms
 
@@ -105,3 +107,13 @@ class RecipeIngredientForm(forms.ModelForm):
         widgets = {
             'amount': forms.TextInput(attrs={'placeholder': 'Введите количество'})
         }
+
+    def clean_ingredient(self):
+        ingredient = self.cleaned_data.get('ingredient')
+        print('this is from form')
+        print(ingredient)
+        return ingredient
+
+
+IngredientFormSet = inlineformset_factory(Recipe, RecipeIngredient, form=RecipeIngredientForm, extra=0,
+                                                  can_delete=True)
