@@ -93,23 +93,8 @@ class RecipeUpdateView(LoginRequiredMixin, UpdateView):
             image = Image.objects.create(url=filename)
             self.object.images.add(image)
 
-        # for key, value in self.request.POST.items():
-        #     print(key, value)
-        #     if key.startswith('ingredient-'):
-        #         index = key.split('-')[1]  # Get the index from the key
-        #         ingredient_name = self.request.POST.get(f'ingredient-{index}-ingredient')
-        #         amount = self.request.POST.get(f'ingredient-{index}-amount')
-        #
-        #         if ingredient_name and amount:
-        #             ingredient, _ = Ingredient.objects.get_or_create(name=ingredient_name.strip().lower())
-        #             recipe_ingredient, _ = RecipeIngredient.objects.get_or_create(
-        #                 recipe=self.object,
-        #                 ingredient=ingredient
-        #             )
-        #             recipe_ingredient.amount = amount
-        #             recipe_ingredient.save()
-
-        # Handling categories
+        # Handling ingredients and  categories
+        existing_ingredients = set(self.object.ingredients.values_list('id', flat=True))
         categories = set()
         ingredients = set()
         for key, value in self.request.POST.items():
@@ -142,7 +127,6 @@ class RecipeUpdateView(LoginRequiredMixin, UpdateView):
                     if category_name:
                         categories.add(category_name)
 
-        existing_ingredients = set(self.object.ingredients.values_list('id', flat=True))
         ingredients_to_remove = existing_ingredients - ingredients
         self.object.ingredients.filter(id__in=ingredients_to_remove).delete()
 
