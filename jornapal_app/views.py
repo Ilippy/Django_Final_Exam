@@ -126,14 +126,15 @@ class RecipeUpdateView(LoginRequiredMixin, UpdateView):
 
         return super().form_valid(form)
 
-    def post(self, request, pk):
+    def post(self, request, *args, **kwargs):
         # удаление картинок
         if 'delete_image' in request.POST:
             image_id = request.POST.get('delete_image')
             image = Image.objects.filter(pk=image_id).first()
             if image:
                 image.delete()
-        return redirect('recipe_update', pk)
+            return redirect('recipe_update', kwargs.get('pk'))
+        return super().post(request, *args, **kwargs)
 
     # def form_invalid(self, form):
     #     response = super().form_invalid(form)
