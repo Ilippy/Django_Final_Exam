@@ -1,14 +1,12 @@
 from django.forms import modelformset_factory, inlineformset_factory
-from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic.edit import CreateView
 from django.views.generic import ListView, DetailView, UpdateView
 from .models import Ingredient, Recipe, Image, Category, RecipeIngredient
 from .forms import IngredientForm, RecipeForm, RecipeIngredientForm, CategoryForm, IngredientFormSet
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.files.storage import FileSystemStorage
-from uuid import uuid4
 
 
 # РЕЦЕПТЫ
@@ -24,13 +22,7 @@ class AddRecipeView(LoginRequiredMixin, CreateView):
         # Handling images
         images = self.request.FILES.getlist('photo')
         for image_data in images:
-            extension = image_data.name.split('.')[-1]
-            filename = f'{uuid4()}.{extension}'
-            # image_data = Image.objects.create(url=image_data)
-            fs = FileSystemStorage()
-            fs.save(filename, image_data)
-            image = Image.objects.create(url=filename)
-            self.object.images.add(image)
+            Image(url=image_data, recipe=self.object).save()
 
         # Handling ingredients and categories
         for key, value in self.request.POST.items():
@@ -71,9 +63,9 @@ class RecipeUpdateView(LoginRequiredMixin, UpdateView):
         # ingredient_formset = IngredientFormSet(data=self.request.POST, files=self.request.FILES, instance=self.object)
         # for obj in ingredient_formset:
         #     print(obj)
-
+        #
         # print(ingredient_formset.cleaned_data)
-
+        #
         # Handling ingredients
         # TODO: Разобраться как сделать сохранение ингредиентов через formset
         # if form.is_valid() and not ingredient_formset.errors:  # ingredient_formset.is_valid() возвращает False
@@ -82,16 +74,10 @@ class RecipeUpdateView(LoginRequiredMixin, UpdateView):
         # else:
         #     print(ingredient_formset.errors, ingredient_formset.non_form_errors)
 
-        # TODO: delete images
         # Handling images
         images = self.request.FILES.getlist('photo')
         for image_data in images:
-            extension = image_data.name.split('.')[-1]
-            filename = f'{uuid4()}.{extension}'
-            fs = FileSystemStorage()
-            fs.save(filename, image_data)
-            image = Image.objects.create(url=filename)
-            self.object.images.add(image)
+            Image(url=image_data, recipe=self.object).save()
 
         # Handling ingredients and  categories
         existing_ingredients = set(self.object.ingredients.values_list('id', flat=True))
@@ -117,7 +103,6 @@ class RecipeUpdateView(LoginRequiredMixin, UpdateView):
                                     recipe_ingredient.delete()
                                     ingredient, _ = Ingredient.objects.get_or_create(name=ingredient_name)
                                     self.object.ingredients.add(ingredient, through_defaults={'amount': amount})
-                            # ingredient = self.object.ingredients.get(pk=ingredient_id)
                         else:
                             ingredient, _ = Ingredient.objects.get_or_create(name=value.strip().lower())
                             self.object.ingredients.add(ingredient, through_defaults={'amount': amount})
@@ -140,6 +125,15 @@ class RecipeUpdateView(LoginRequiredMixin, UpdateView):
             self.object.categories.add(category)
 
         return super().form_valid(form)
+
+    def post(self, request, pk):
+        # удаление картинок
+        if 'delete_image' in request.POST:
+            image_id = request.POST.get('delete_image')
+            image = Image.objects.filter(pk=image_id).first()
+            if image:
+                image.delete()
+        return redirect('recipe_update', pk)
 
     # def form_invalid(self, form):
     #     response = super().form_invalid(form)
@@ -174,14 +168,11 @@ class RecipeDetailView(DetailView):
 
 # Отобразить рецепты пользователя
 class MyRecipeListView(LoginRequiredMixin, ListView):
-    model = Recipe
     template_name = 'jornapal_app/home.html'
     context_object_name = 'recipes'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['recipes'] = context['recipes'].filter(author=self.request.user)
-        return context
+    def get_queryset(self):
+        return Recipe.objects.select_related('author').filter(is_deleted=False, author=self.request.user)
 
 
 # Ингредиенты

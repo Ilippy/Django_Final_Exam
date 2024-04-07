@@ -10,6 +10,14 @@ Update Recipe
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.photo }}
+    {% for image in object.images.all %}
+    <div class="form-group mt-2">
+        <img src="{{ image.url.url }}" alt="Recipe Image" style="max-width: 200px; max-height: 200px;">
+        <button formnovalidate type="submit" name="delete_image" value="{{ image.id }}" class="btn btn-danger">
+            Удалить
+        </button>
+    </div>
+    {% endfor %}
     <div class="form-group mt-2">
         {{ form.title.label }}
         {{ form.title }}
@@ -28,7 +36,8 @@ Update Recipe
         <div class="ingredient-group mt-1 d-flex gap-3">
             {{ set_form.id }}
             <input type="text" name="ingredient-{{ forloop.counter0 }}-ingredient"
-                   value="{{ set_form.instance.ingredient.name|capfirst }}" placeholder="Введите ингредиент" required maxlength="80">
+                   value="{{ set_form.instance.ingredient.name|capfirst }}" placeholder="Введите ингредиент" required
+                   maxlength="80">
             {{ set_form.amount }}
             <button class="remove-ingredient btn btn-outline-danger" type="button"><i class="bi bi-x"></i></button>
         </div>
@@ -49,13 +58,14 @@ Update Recipe
         </h4>
         {% for category in form.instance.categories.all %}
         <div class="category-group mt-1 d-flex gap-3">
-            <input type="text" name="category-{{forloop.counter0}}-name" value="{{ category.name|capfirst }}" required placeholder="Введите категорию"
+            <input type="text" name="category-{{forloop.counter0}}-name" value="{{ category.name|capfirst }}" required
+                   placeholder="Введите категорию"
                    maxlength="80">
             <button class="remove-category btn btn-outline-danger" type="button"><i class="bi bi-x"></i></button>
         </div>
         {% endfor %}
     </div>
-    <input class="btn btn-secondary mt-5" type="submit" value="Update">
+    <input class="btn btn-secondary mt-5" type="submit" value="Обновить">
 </form>
 {% endblock %}
 

@@ -101,6 +101,7 @@ class RecipeForm(forms.ModelForm):
 
 class RecipeIngredientForm(forms.ModelForm):
     ingredient = forms.CharField(max_length=80)
+
     class Meta:
         model = RecipeIngredient
         fields = ['ingredient', 'amount', ]
@@ -116,4 +117,4 @@ class RecipeIngredientForm(forms.ModelForm):
 
 
 IngredientFormSet = inlineformset_factory(Recipe, RecipeIngredient, form=RecipeIngredientForm, extra=0,
-                                                  can_delete=True)
+                                          can_delete=True)

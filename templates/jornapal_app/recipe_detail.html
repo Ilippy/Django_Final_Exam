@@ -23,7 +23,7 @@
         </tr>
         {% for recipe_ingredient in recipe.recipe_ingredients.all %}
         <tr>
-            <td>{{ recipe_ingredient.ingredient.name }}</td>
+            <td>{{ recipe_ingredient.ingredient.name|capfirst }}</td>
             <td>{{ recipe_ingredient.amount }}</td>
         </tr>
         {% endfor %}
